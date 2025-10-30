@@ -2,7 +2,7 @@
 
 return [
 
-    'default' => env('BROADCAST_DRIVER', 'log'),
+    'default' => env('BROADCAST_DRIVER', 'pusher'),
 
     'connections' => [
 
