@@ -11,15 +11,18 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Register middleware aliases
+        $middleware->alias([
+            'admin' => \App\Http\Middleware\AdminMiddleware::class,
+            'member' => \App\Http\Middleware\MemberMiddleware::class,
+            'log.admin' => \App\Http\Middleware\LogAdminActivity::class,
+        ]);
 
-            $middleware->alias([
-                'admin' => \App\Http\Middleware\AdminMiddleware::class, // Register admin middleware
-                'member' => \App\Http\Middleware\MemberMiddleware::class,
-                'log.admin' => \App\Http\Middleware\LogAdminActivity::class,
-            ]);
-        })
-
-
+        // Add ForceHttps to web middleware group
+        $middleware->web(append: [
+            \App\Http\Middleware\ForceHttps::class,
+        ]);
+    })
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();
