@@ -1239,7 +1239,7 @@ body {
                 <span class="menu-text">Sermons</span>
             </a>
 
-             <a href="/livestream " class="menu-item {{ request()->is('livestream*') ? 'active' : '' }}">
+             <a href="/livestream" class="menu-item {{ request()->is('livestream*') ? 'active' : '' }}">
                 <i class="fas fa-video"></i>
                 <span class="menu-text">Live Stream</span>
             </a>
@@ -1310,6 +1310,12 @@ body {
         <a href="/sermons" class="mobile-nav-item {{ request()->is('sermons*') ? 'active' : '' }}">
             <i class="fas fa-bible"></i>
             <span>Sermons</span>
+        </a>
+        
+        <!-- Live Stream -->
+        <a href="/livestream" class="mobile-nav-item {{ request()->is('livestream*') ? 'active' : '' }}">
+            <i class="fas fa-video"></i>
+            <span>Live</span>
         </a>
         
         <!-- Menu Dropdown -->
