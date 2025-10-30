@@ -84,7 +84,7 @@
                             <tbody>
                                 @forelse ($events as $event)
                                     <tr class="event-row">
-                                        <td class="px-4 py-3">
+                                        <td class="px-4 py-3" data-label="Title">
                                             <div class="d-flex align-items-center">
                                                 <div class="event-color-dot" style="background-color: {{ $event->color ?? '#3788d8' }}"></div>
                                                 <span class="ms-2 fw-medium">{{ $event->title }}</span>
@@ -95,29 +95,29 @@
                                                 @endif
                                             </div>
                                         </td>
-                                        <td class="px-4 py-3 d-none d-md-table-cell">
+                                        <td class="px-4 py-3 d-none d-md-table-cell" data-label="Description">
                                             <div class="text-truncate" style="max-width: 300px;">
                                                 {{ $event->description }}
                                             </div>
                                         </td>
-                                        <td class="px-4 py-3">
+                                        <td class="px-4 py-3" data-label="Date">
                                             <div class="d-flex align-items-center">
                                                 <i class="bi bi-calendar2-event text-muted me-2"></i>
                                                 <p class="mb-0">
                                                     {{ \Carbon\Carbon::parse($event->event_date)->format('F d, Y') }}
                                                     @if($event->event_time)
-                                                        at {{ \Carbon\Carbon::parse($event->event_time)->format('g:i A') }}
+                                                        <br><small>{{ \Carbon\Carbon::parse($event->event_time)->format('g:i A') }}</small>
                                                     @endif
                                                 </p>
                                             </div>
                                         </td>
-                                        <td class="px-4 py-3">
+                                        <td class="px-4 py-3" data-label="Location">
                                             <div class="d-flex align-items-center">
                                                 <i class="bi bi-geo-alt text-muted me-2"></i>
-                                                {{ $event->location }}
+                                                <span class="text-break">{{ $event->location }}</span>
                                             </div>
                                         </td>
-                                        <td class="px-4 py-3 text-center">
+                                        <td class="px-4 py-3 text-center" data-label="Actions">
                                             <button type="button" class="btn btn-sm btn-outline-primary view-event" 
                                                 data-event-id="{{ $event->id }}"
                                                 data-bs-toggle="modal"
@@ -128,7 +128,7 @@
                                                 data-allow-comments="{{ $event->poll->allow_comments ? '1' : '0' }}"
                                                 @endif
                                                 >
-                                                <i class="bi bi-eye"></i>
+                                                <i class="bi bi-eye"></i> <span class="d-md-none">View Details</span>
                                             </button>
                                         </td>
                                     </tr>
@@ -345,6 +345,77 @@
 
         .fc .fc-toolbar-title {
             font-size: 1.25rem;
+        }
+        
+        /* Mobile card layout for table */
+        .table thead {
+            display: none;
+        }
+        
+        .table, .table tbody, .table tr, .table td {
+            display: block;
+            width: 100%;
+        }
+        
+        .table tr {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .table td {
+            border: none;
+            padding: 0.5rem 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        
+        .table td:before {
+            content: attr(data-label);
+            font-weight: bold;
+            color: #6c757d;
+            flex: 0 0 25%;
+            margin-right: 1rem;
+        }
+        
+        .table td:nth-child(1):before { content: "Title: "; }
+        .table td:nth-child(2):before { content: "Description: "; }
+        .table td:nth-child(3):before { content: "Date: "; }
+        .table td:nth-child(4):before { content: "Location: "; }
+        .table td:nth-child(5):before { content: "Actions: "; }
+        
+        .table td:last-child {
+            justify-content: center;
+        }
+        
+        .text-truncate {
+            max-width: none !important;
+            white-space: normal;
+            overflow: visible;
+            text-overflow: unset;
+        }
+        
+        .card-header .input-group {
+            margin-top: 0.5rem;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .card-body {
+            padding: 1rem;
+        }
+        
+        .modal-dialog {
+            margin: 0.5rem;
         }
     }
 

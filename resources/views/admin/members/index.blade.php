@@ -92,8 +92,8 @@
                             <tbody>
                                 @forelse ($members as $member)
                                 <tr class="animate__animated animate__fadeIn">
-                                    <td class="ps-4 fw-bold text-muted">{{ $member->id }}</td>
-                                    <td>
+                                    <td class="ps-4 fw-bold text-muted" data-label="ID">{{ $member->id }}</td>
+                                    <td data-label="Name">
                                         <div class="d-flex align-items-center">
                                             <div class="avatar-circle bg-primary text-white me-2">
                                                 {{ strtoupper(substr($member->user_name, 0, 1)) }}
@@ -101,16 +101,16 @@
                                             <div>{{ $member->user_name }}</div>
                                         </div>
                                     </td>
-                                    <td>
+                                    <td data-label="Email">
                                         <div class="d-flex align-items-center">
-                                            <i class="bi bi-envelope text-muted me-2"></i>
-                                            {{ $member->user_email }}
+                                            <i class="bi bi-envelope text-muted me-2 d-none d-md-inline"></i>
+                                            <span class="text-break">{{ $member->user_email }}</span>
                                         </div>
                                     </td>
-                                    <td class="status-column">
+                                    <td class="status-column" data-label="Status">
                                         {!! $member->status_badge !!}
                                     </td>
-                                    <td>
+                                    <td data-label="Actions">
                                         <div class="d-flex justify-content-center gap-2">
                                             <a href="{{ route('admin.members.show', $member->id) }}"
                                                class="btn btn-sm btn-primary-soft" title="View Details">
@@ -333,6 +333,50 @@
         .badge {
             width: 100%;
             text-align: center;
+        }
+        
+        /* Mobile card layout for table */
+        .table thead {
+            display: none;
+        }
+        
+        .table, .table tbody, .table tr, .table td {
+            display: block;
+            width: 100%;
+        }
+        
+        .table tr {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .table td {
+            border: none;
+            padding: 0.5rem 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .table td:before {
+            content: attr(data-label);
+            font-weight: bold;
+            color: #6c757d;
+            flex: 0 0 40%;
+        }
+        
+        .table td:nth-child(1):before { content: "ID: "; }
+        .table td:nth-child(2):before { content: "Name: "; }
+        .table td:nth-child(3):before { content: "Email: "; }
+        .table td:nth-child(4):before { content: "Status: "; }
+        .table td:nth-child(5):before { content: "Actions: "; }
+        
+        .table td:nth-child(5) {
+            justify-content: center;
         }
     }
 </style>

@@ -406,4 +406,113 @@
     })();
 </script>
 
+<style>
+    /* Mobile responsiveness */
+    @media (max-width: 991.98px) {
+        .col-lg-4, .col-lg-8 {
+            margin-bottom: 2rem;
+        }
+        
+        .position-relative {
+            width: 150px !important;
+            height: 150px !important;
+        }
+        
+        #profileImageDisplay {
+            width: 150px !important;
+            height: 150px !important;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .nav-tabs {
+            flex-wrap: wrap;
+        }
+        
+        .nav-tabs .nav-link {
+            font-size: 0.9rem;
+            padding: 0.5rem 0.75rem;
+        }
+        
+        .row.mb-3 .col-md-4,
+        .row.mb-3 .col-md-6,
+        .row.mb-3 .col-md-12 {
+            margin-bottom: 1rem;
+        }
+        
+        .input-group {
+            flex-wrap: nowrap;
+        }
+        
+        .input-group-text {
+            min-width: 45px;
+            justify-content: center;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .list-group-item {
+            flex-direction: column;
+            align-items: flex-start !important;
+        }
+        
+        .list-group-item span:first-child {
+            margin-bottom: 0.25rem;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .position-relative {
+            width: 120px !important;
+            height: 120px !important;
+        }
+        
+        #profileImageDisplay {
+            width: 120px !important;
+            height: 120px !important;
+        }
+        
+        .card {
+            margin: 0 -0.5rem;
+        }
+        
+        .card-body {
+            padding: 1rem;
+        }
+        
+        .nav-tabs .nav-link {
+            font-size: 0.8rem;
+            padding: 0.4rem 0.6rem;
+        }
+        
+        .nav-tabs .nav-link i {
+            display: none;
+        }
+        
+        .btn {
+            font-size: 0.9rem;
+        }
+        
+        .d-flex.justify-content-end {
+            flex-direction: column;
+        }
+        
+        .d-flex.justify-content-end .btn {
+            margin-bottom: 0.5rem;
+            margin-right: 0 !important;
+        }
+        
+        .d-flex.justify-content-end .btn:last-child {
+            margin-bottom: 0;
+        }
+    }
+</style>
+
 @endsection

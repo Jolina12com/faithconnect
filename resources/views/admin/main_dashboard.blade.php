@@ -497,12 +497,63 @@
 
     /* Responsive */
     @media (max-width: 768px) {
+        .dashboard {
+            padding: 1rem;
+        }
+        
         .stats, .charts {
             flex-direction: column;
         }
 
+        .stat {
+            flex: 1 1 100%;
+            margin-bottom: 1rem;
+        }
+
+        .chart-card {
+            flex: 1 1 100%;
+            margin-bottom: 1rem;
+        }
+
         .calendar-grid {
             grid-template-columns: repeat(2, 1fr);
+            gap: 5px;
+        }
+        
+        .calendar-day {
+            height: 60px;
+            font-size: 0.8rem;
+        }
+        
+        .event-name {
+            font-size: 0.65rem;
+            margin-top: 20px;
+        }
+        
+        .top-emotions-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .dashboard {
+            padding: 0.5rem;
+        }
+        
+        .calendar-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .calendar-day {
+            height: 50px;
+        }
+        
+        .top-emotions-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .emotion-card {
+            padding: 10px;
         }
     }
 

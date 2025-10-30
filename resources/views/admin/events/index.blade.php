@@ -272,7 +272,7 @@
                     <tbody>
                         @foreach ($events as $event)
                         <tr>
-                            <td class="px-4 py-3">
+                            <td class="px-4 py-3" data-label="Event">
                                 <div class="d-flex align-items-center">
                                     <div class="event-color-dot me-3" style="background-color: {{ $event->color ?? '#3788d8' }}"></div>
                                     <div>
@@ -291,12 +291,12 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-4 py-3 d-none d-md-table-cell">
+                            <td class="px-4 py-3 d-none d-md-table-cell" data-label="Description">
                                 <div class="text-truncate" style="max-width: 250px;">
                                     {{ $event->description ?: 'No description provided' }}
                                 </div>
                             </td>
-                            <td class="px-4 py-3">
+                            <td class="px-4 py-3" data-label="Date">
                                 <div>
                                     <div class="d-flex align-items-center">
                                         <i class="bi bi-calendar2-event text-primary me-2"></i>
@@ -310,7 +310,7 @@
                                     @endif
                                 </div>
                             </td>
-                            <td class="px-4 py-3 d-none d-md-table-cell">
+                            <td class="px-4 py-3 d-none d-md-table-cell" data-label="Location">
                                 <div class="d-flex align-items-center">
                                     <i class="bi bi-geo-alt text-primary me-2"></i>
                                     {{ $event->location }}
@@ -525,6 +525,79 @@
 
         .pagination {
             justify-content: center;
+        }
+        
+        /* Mobile card layout for table */
+        .table thead {
+            display: none;
+        }
+        
+        .table, .table tbody, .table tr, .table td {
+            display: block;
+            width: 100%;
+        }
+        
+        .table tr {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .table td {
+            border: none;
+            padding: 0.5rem 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        
+        .table td:before {
+            content: attr(data-label);
+            font-weight: bold;
+            color: #6c757d;
+            flex: 0 0 30%;
+            margin-right: 1rem;
+        }
+        
+        .table td:nth-child(1):before { content: "Event: "; }
+        .table td:nth-child(2):before { content: "Description: "; }
+        .table td:nth-child(3):before { content: "Date: "; }
+        .table td:nth-child(4):before { content: "Location: "; }
+        .table td:nth-child(5):before { content: "Details: "; }
+        .table td:nth-child(6):before { content: "Actions: "; }
+        
+        .table td:last-child {
+            justify-content: center;
+        }
+        
+        .text-truncate {
+            max-width: none !important;
+            white-space: normal;
+            overflow: visible;
+            text-overflow: unset;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .nav-tabs .nav-link {
+            font-size: 0.875rem;
+            padding: 0.5rem 0.75rem;
+        }
+        
+        .nav-tabs .nav-link i {
+            display: none;
+        }
+        
+        .icon-box {
+            width: 40px;
+            height: 40px;
+        }
+        
+        .card-body {
+            padding: 1rem;
         }
     }
 </style>

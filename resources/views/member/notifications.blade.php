@@ -143,6 +143,71 @@
     .clickable-notification {
         transition: all 0.2s ease;
     }
+    
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+        .container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .card-header {
+            flex-direction: column;
+            align-items: flex-start !important;
+        }
+        
+        .card-header h4 {
+            margin-bottom: 0.5rem;
+        }
+        
+        .nav-pills {
+            flex-wrap: wrap;
+        }
+        
+        .nav-pills .nav-item {
+            margin-bottom: 0.5rem;
+        }
+        
+        .notification-item {
+            padding: 1rem !important;
+        }
+        
+        .notification-item .d-flex {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .notification-item .me-3 {
+            margin-right: 0 !important;
+            margin-bottom: 0.5rem;
+            align-self: center;
+        }
+        
+        .notification-item .ms-2 {
+            margin-left: 0 !important;
+            margin-top: 0.5rem;
+            align-self: center;
+        }
+        
+        .notification-item .flex-grow-1 {
+            text-align: center;
+            width: 100%;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .card {
+            margin: 0 -0.5rem;
+        }
+        
+        .notification-item h6 {
+            font-size: 1rem;
+        }
+        
+        .notification-item p {
+            font-size: 0.9rem;
+        }
+    }
 </style>
 
 <script>

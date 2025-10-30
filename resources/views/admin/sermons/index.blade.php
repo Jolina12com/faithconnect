@@ -128,7 +128,7 @@
                     <tbody>
                         @forelse ($sermons as $sermon)
                             <tr>
-                                <td class="align-middle">
+                                <td class="align-middle" data-label="Title">
                                     <div class="d-flex align-items-center">
                                         @if($sermon->featured)
                                         <div class="sermon-icon bg-warning text-white rounded me-3 p-2">
@@ -145,13 +145,13 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="align-middle">
+                                <td class="align-middle" data-label="Speaker">
                                     {{ $sermon->speaker_name ?? 'Unknown Speaker' }}
                                 </td>
-                                <td class="align-middle">
+                                <td class="align-middle" data-label="Scripture">
                                     {{ $sermon->scripture_reference ?? 'N/A' }}
                                 </td>
-                                <td class="align-middle">
+                                <td class="align-middle" data-label="Preview">
                                     <div class="d-flex">
                                         @if($sermon->video_path)
                                             <div class="sermon-preview me-2">
@@ -173,7 +173,7 @@
                                         @endif
                                     </div>
                                 </td>
-                                <td class="align-middle">
+                                <td class="align-middle" data-label="Date">
                                     <div>
                                         <div class="mb-1">{{ $sermon->date_preached ? \Carbon\Carbon::parse($sermon->date_preached)->format('M d, Y') : 'N/A' }}</div>
                                         <small class="text-muted">
@@ -182,7 +182,7 @@
                                         </small>
                                     </div>
                                 </td>
-                                <td class="align-middle text-center">
+                                <td class="align-middle text-center" data-label="Actions">
                                     <div class="btn-group" role="group">
                                         <a href="{{ route('admin.sermons.show', $sermon->id) }}" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="View Sermon">
                                             <i class="fas fa-eye"></i>
@@ -408,32 +408,87 @@
         }
 
         .table tr {
-            margin-bottom: 15px;
-            border-bottom: 2px solid #e3e6f0;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .table td {
+            border: none;
+            padding: 0.5rem 0;
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            text-align: right;
-            padding: 10px 15px;
-            border-bottom: 1px solid #e3e6f0;
+            align-items: flex-start;
         }
 
         .table td:before {
             content: attr(data-label);
             font-weight: bold;
-            text-align: left;
-            width: 30%;
+            color: #6c757d;
+            flex: 0 0 30%;
+            margin-right: 1rem;
         }
+        
+        .table td:nth-child(1):before { content: "Title: "; }
+        .table td:nth-child(2):before { content: "Speaker: "; }
+        .table td:nth-child(3):before { content: "Scripture: "; }
+        .table td:nth-child(4):before { content: "Preview: "; }
+        .table td:nth-child(5):before { content: "Date: "; }
+        .table td:nth-child(6):before { content: "Actions: "; }
 
         .table td:last-child {
-            border-bottom: 0;
+            justify-content: center;
         }
 
         .modal-dialog {
             margin: 0.5rem;
+        }
+        
+        .sermon-preview {
+            width: 60px;
+            height: auto;
+        }
+        
+        .sermon-preview video {
+            width: 60px;
+            height: 34px;
+        }
+        
+        .btn-group {
+            flex-direction: column;
+        }
+        
+        .btn-group .btn {
+            margin-bottom: 0.25rem;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .container-fluid {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .card {
+            margin: 0 -0.5rem;
+        }
+        
+        .sermon-icon {
+            width: 30px;
+            height: 30px;
+        }
+        
+        .table td {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .table td:before {
+            margin-bottom: 0.25rem;
+            flex: none;
         }
     }
 </style>
