@@ -6,10 +6,10 @@
         <div class="col-12">
             <div class="card shadow-lg border-0">
                 <div class="card-header bg-gradient-primary text-white">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h4 class="mb-0"><i class="fas fa-history mr-2"></i>System Logs</h4>
-                        <div class="d-flex gap-2">
-                            <select id="actionFilter" class="form-control form-control-sm" style="width: 120px;">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+                        <h4 class="mb-2 mb-md-0"><i class="fas fa-history mr-2"></i>System Logs</h4>
+                        <div class="d-flex flex-column flex-md-row gap-2 w-100 w-md-auto">
+                            <select id="actionFilter" class="form-control form-control-sm mb-2 mb-md-0">
                                 <option value="">All Actions</option>
                                 <option value="Created">Created</option>
                                 <option value="Updated">Updated</option>
@@ -17,7 +17,7 @@
                                 <option value="Accessed">Accessed</option>
                                 <option value="Login">Login</option>
                             </select>
-                            <select id="monthFilter" class="form-control form-control-sm" style="width: 120px;">
+                            <select id="monthFilter" class="form-control form-control-sm mb-2 mb-md-0">
                                 <option value="">All Months</option>
                                 <option value="01">January</option>
                                 <option value="02">February</option>
@@ -32,75 +32,120 @@
                                 <option value="11">November</option>
                                 <option value="12">December</option>
                             </select>
-                            <input type="date" id="dateFilter" class="form-control form-control-sm" style="width: 140px;">
+                            <input type="date" id="dateFilter" class="form-control form-control-sm mb-2 mb-md-0">
                             <button onclick="printLogs()" class="btn btn-light btn-sm">
-                                <i class="fas fa-print mr-1" style="color: black;"></i>Print
+                                <i class="fas fa-print mr-1" style="color: black;"></i><span class="d-none d-md-inline">Print</span>
                             </button>
                         </div>
                     </div>
                 </div>
                 <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead class="bg-dark text-white">
-                                <tr>
-                                    <th class="border-0"><i class="fas fa-user mr-1"></i>User</th>
-                                    <th class="border-0"><i class="fas fa-bolt mr-1"></i>Action</th>
-                                    <th class="border-0"><i class="fas fa-clock mr-1"></i>Date/Time</th>
-                                    <th class="border-0"><i class="fas fa-globe mr-1"></i>IP Address</th>
-                                    <th class="border-0"><i class="fas fa-info-circle mr-1"></i>Details</th>
-
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($logs as $log)
-                                    <tr class="log-row">
-                                        <td class="align-middle">
-                                            <div class="d-flex align-items-center">
-                                                <div class="avatar-sm bg-primary rounded-circle d-flex align-items-center justify-content-center mr-2">
-                                                    <i class="fas fa-user text-white"></i>
-                                                </div>
-                                                <span class="font-weight-bold">{{ $log->user->name ?? 'Unknown' }}</span>
-                                            </div>
-                                        </td>
-                                        <td class="align-middle">
-                                            @php
-                                                $badgeClass = 'badge-primary';
-                                                $icon = 'fas fa-cog';
-                                                if(str_contains($log->action, 'Created')) { $badgeClass = 'badge-success'; $icon = 'fas fa-plus'; }
-                                                elseif(str_contains($log->action, 'Updated')) { $badgeClass = 'badge-warning text-dark'; $icon = 'fas fa-edit'; }
-                                                elseif(str_contains($log->action, 'Deleted')) { $badgeClass = 'badge-danger'; $icon = 'fas fa-trash'; }
-                                                elseif(str_contains($log->action, 'Accessed')) { $badgeClass = 'badge-info'; $icon = 'fas fa-eye'; }
-                                                elseif(str_contains($log->action, 'Login') || str_contains($log->action, 'Logged')) { $badgeClass = 'badge-dark'; $icon = 'fas fa-sign-in-alt'; }
-                                            @endphp
-                                            <span class="badge {{ $badgeClass }} px-3 py-2">
-                                                <i class="{{ $icon }} mr-1"></i>{{ $log->action }}
-                                            </span>
-                                        </td>
-                                        <td class="align-middle">
-                                            <small class="text-muted">
-                                                <i class="fas fa-calendar-alt mr-1"></i>{{ $log->created_at->format('M d, Y') }}<br>
-                                                <i class="fas fa-clock mr-1"></i>{{ $log->created_at->format('h:i A') }}
-                                            </small>
-                                        </td>
-                                        <td class="align-middle">
-                                            <span class="badge badge-light">{{ $log->ip_address ?? 'N/A' }}</span>
-                                        </td>
-                                        <td class="align-middle">
-                                            <button class="btn btn-outline-info btn-sm" onclick="showDetails({{ $log->id }})">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                            <div id="details-{{ $log->id }}" class="details-box mt-2" style="display:none;">
-                                                <div class="alert alert-info mb-0">
-                                                    <small>{{ $log->details }}</small>
-                                                </div>
-                                            </div>
-                                        </td>
-
+                    <!-- Mobile View -->
+                    <div class="d-md-none">
+                        @foreach($logs as $log)
+                            <div class="log-row border-bottom p-3">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm bg-primary rounded-circle d-flex align-items-center justify-content-center mr-2">
+                                            <i class="fas fa-user text-white"></i>
+                                        </div>
+                                        <div>
+                                            <div class="font-weight-bold">{{ $log->user->name ?? 'Unknown' }}</div>
+                                            <small class="text-muted">{{ $log->created_at->format('M d, Y h:i A') }}</small>
+                                        </div>
+                                    </div>
+                                    @php
+                                        $badgeClass = 'badge-primary';
+                                        $icon = 'fas fa-cog';
+                                        if(str_contains($log->action, 'Created')) { $badgeClass = 'badge-success'; $icon = 'fas fa-plus'; }
+                                        elseif(str_contains($log->action, 'Updated')) { $badgeClass = 'badge-warning text-dark'; $icon = 'fas fa-edit'; }
+                                        elseif(str_contains($log->action, 'Deleted')) { $badgeClass = 'badge-danger'; $icon = 'fas fa-trash'; }
+                                        elseif(str_contains($log->action, 'Accessed')) { $badgeClass = 'badge-info'; $icon = 'fas fa-eye'; }
+                                        elseif(str_contains($log->action, 'Login') || str_contains($log->action, 'Logged')) { $badgeClass = 'badge-dark'; $icon = 'fas fa-sign-in-alt'; }
+                                    @endphp
+                                    <span class="badge {{ $badgeClass }} px-2 py-1">
+                                        <i class="{{ $icon }} mr-1"></i>{{ $log->action }}
+                                    </span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">
+                                        <i class="fas fa-globe mr-1"></i>{{ $log->ip_address ?? 'N/A' }}
+                                    </small>
+                                    <button class="btn btn-outline-info btn-sm" onclick="showDetails({{ $log->id }})">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                <div id="details-{{ $log->id }}" class="details-box mt-2" style="display:none;">
+                                    <div class="alert alert-info mb-0">
+                                        <small>{{ $log->details }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                    
+                    <!-- Desktop View -->
+                    <div class="d-none d-md-block">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="bg-dark text-white">
+                                    <tr>
+                                        <th class="border-0"><i class="fas fa-user mr-1"></i>User</th>
+                                        <th class="border-0"><i class="fas fa-bolt mr-1"></i>Action</th>
+                                        <th class="border-0"><i class="fas fa-clock mr-1"></i>Date/Time</th>
+                                        <th class="border-0"><i class="fas fa-globe mr-1"></i>IP Address</th>
+                                        <th class="border-0"><i class="fas fa-info-circle mr-1"></i>Details</th>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @foreach($logs as $log)
+                                        <tr class="log-row">
+                                            <td class="align-middle">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-sm bg-primary rounded-circle d-flex align-items-center justify-content-center mr-2">
+                                                        <i class="fas fa-user text-white"></i>
+                                                    </div>
+                                                    <span class="font-weight-bold">{{ $log->user->name ?? 'Unknown' }}</span>
+                                                </div>
+                                            </td>
+                                            <td class="align-middle">
+                                                @php
+                                                    $badgeClass = 'badge-primary';
+                                                    $icon = 'fas fa-cog';
+                                                    if(str_contains($log->action, 'Created')) { $badgeClass = 'badge-success'; $icon = 'fas fa-plus'; }
+                                                    elseif(str_contains($log->action, 'Updated')) { $badgeClass = 'badge-warning text-dark'; $icon = 'fas fa-edit'; }
+                                                    elseif(str_contains($log->action, 'Deleted')) { $badgeClass = 'badge-danger'; $icon = 'fas fa-trash'; }
+                                                    elseif(str_contains($log->action, 'Accessed')) { $badgeClass = 'badge-info'; $icon = 'fas fa-eye'; }
+                                                    elseif(str_contains($log->action, 'Login') || str_contains($log->action, 'Logged')) { $badgeClass = 'badge-dark'; $icon = 'fas fa-sign-in-alt'; }
+                                                @endphp
+                                                <span class="badge {{ $badgeClass }} px-3 py-2">
+                                                    <i class="{{ $icon }} mr-1"></i>{{ $log->action }}
+                                                </span>
+                                            </td>
+                                            <td class="align-middle">
+                                                <small class="text-muted">
+                                                    <i class="fas fa-calendar-alt mr-1"></i>{{ $log->created_at->format('M d, Y') }}<br>
+                                                    <i class="fas fa-clock mr-1"></i>{{ $log->created_at->format('h:i A') }}
+                                                </small>
+                                            </td>
+                                            <td class="align-middle">
+                                                <span class="badge badge-light">{{ $log->ip_address ?? 'N/A' }}</span>
+                                            </td>
+                                            <td class="align-middle">
+                                                <button class="btn btn-outline-info btn-sm" onclick="showDetails({{ $log->id }})">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <div id="details-{{ $log->id }}" class="details-box mt-2" style="display:none;">
+                                                    <div class="alert alert-info mb-0">
+                                                        <small>{{ $log->details }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
                 <div class="card-footer bg-light">
