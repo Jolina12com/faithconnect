@@ -410,3 +410,6 @@ Route::get('/test-email', function() {
         return 'Error: ' . $e->getMessage();
     }
 })->middleware('throttle:10,1');
+
+// Include verification routes
+require __DIR__.'/verification.php';
