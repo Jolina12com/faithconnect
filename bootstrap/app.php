@@ -18,10 +18,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'log.admin' => \App\Http\Middleware\LogAdminActivity::class,
         ]);
 
-        // Add ForceHttps to web middleware group
-        $middleware->web(append: [
-            \App\Http\Middleware\ForceHttps::class,
-        ]);
+        // REMOVE ForceHttps - not needed!
+        // $middleware->web(append: [
+        //     \App\Http\Middleware\ForceHttps::class,
+        // ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
