@@ -885,7 +885,7 @@
         btn.disabled = true;
         btn.textContent = 'Sending...';
         
-        fetch('{{ route("send-verification") }}', {
+        fetch('/send-verification', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -937,7 +937,7 @@
         btn.disabled = true;
         btn.textContent = 'Verifying...';
         
-        fetch('{{ route("verify-registration") }}', {
+        fetch('/verify-registration', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
