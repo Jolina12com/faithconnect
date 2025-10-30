@@ -50,7 +50,7 @@ Route::middleware(['auth'])->group(function () {
         ->name('password.change.required');
     Route::post('/password/change-required', [PasswordChangeController::class, 'update'])
         ->name('password.change.update');
-        
+
     // Routes that require password to be changed
     Route::middleware(['auth','member',\App\Http\Middleware\CheckPasswordChanged::class])->group(function () {
         Route::get('/home', [HomeController::class, 'index'])->name('home');
@@ -60,7 +60,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/profile/upload', [HomeController::class, 'upload'])->name('profile.upload');
         Route::put('/password/change', [HomeController::class, 'changePassword'])->name('password.change');
         Route::get('/member/events', [MemberEventController::class, 'index'])->name('member.events.index');
-        
+
     // New enhanced notification routes
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications');
     Route::get('/notifications/{id}/redirect', [NotificationController::class, 'markAsReadAndRedirect'])->name('notifications.redirect');
@@ -71,13 +71,13 @@ Route::middleware(['auth'])->group(function () {
         // Show a specific event with poll and responses (show)
         Route::get('/member/events/{id}', [MemberEventController::class, 'show'])->name('member.events.show');
         Route::get('/member/events/{id}/poll', [MemberEventController::class, 'getPollDetails'])->name('member.events.poll');
-        
+
         // Submit a response to an event poll (submitPollResponse)
         Route::post('/member/events/{id}/poll-response', [MemberEventController::class, 'submitPollResponse'])->name('member.events.poll.submit');
 
         Route::get('/chatbot', [HomeController::class, 'chatbot'])->name('member.chatbot');
         Route::get('/daily-verse', [HomeController::class, 'dailyVerse'])->name('member.daily_verse');
-        
+
         // Sermon routes for members
         Route::get('/sermons', [SermonMemberController::class, 'index'])->name('member.sermons.index');
         Route::get('/sermons/{sermon}', [SermonMemberController::class, 'show'])->name('member.sermons.show');
@@ -101,7 +101,7 @@ Route::middleware(['auth'])->group(function () {
 
         // Add the chatbot analytics route here
         Route::post('/chatbot-analytics/store-message', [ChatbotAnalyticsController::class, 'storeMessage'])->name('chatbot.analytics.store');
-        
+
         // Chatbot routes
         Route::post('/chatbot/send', [ChatbotController::class, 'sendMessage'])->name('chatbot.send');
         Route::post('/chatbot/more-verses', [ChatbotController::class, 'getMoreVerses'])->name('chatbot.more.verses');
@@ -124,7 +124,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/donations/{id}/edit', [App\Http\Controllers\Admin\DonationController::class, 'edit'])->name('donations.edit');
         Route::put('/donations/{id}', [App\Http\Controllers\Admin\DonationController::class, 'update'])->name('donations.update');
         Route::delete('/donations/{id}', [App\Http\Controllers\Admin\DonationController::class, 'destroy'])->name('donations.destroy');
-      
+
         // Autocomplete for donation categories and items
         Route::get('/donations/categories/autocomplete', [App\Http\Controllers\Admin\DonationController::class, 'getCategories'])->name('donations.categories.autocomplete');
         Route::get('/donations/items/autocomplete', [App\Http\Controllers\Admin\DonationController::class, 'getItems'])->name('donations.items.autocomplete');
@@ -134,7 +134,7 @@ Route::middleware(['auth'])->group(function () {
 
 
         Route::get('/ministries', [AdminController::class, 'ministries'])->name('ministries');
-   
+
 
         Route::get('/messaging', [AdminController::class, 'messaging'])->name('messaging');
         Route::get('/notifications', [AdminController::class, 'notifications'])->name('notifications');
@@ -148,20 +148,20 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/events/{id}/details', [App\Http\Controllers\EventController::class, 'ajaxDetails'])->name('events.ajaxDetails');
         Route::get('/event-analytics', [EventController::class, 'getEventAnalytics'])->name('events.analytics');
         Route::get('/events-range', [EventController::class, 'getEventsForRange'])->name('events.range');
-        
+
         // Wedding and Baptism convenience routes (these map to the events resource with type parameter)
         Route::get('/weddings', [EventController::class, 'index'])
             ->defaults('type', 'wedding')
             ->name('weddings.index');
-        
+
         Route::get('/weddings/create', [EventController::class, 'create'])
             ->defaults('type', 'wedding')
             ->name('weddings.create');
-        
+
         Route::get('/baptisms', [EventController::class, 'index'])
             ->defaults('type', 'baptism')
             ->name('baptisms.index');
-        
+
         Route::get('/baptisms/create', [EventController::class, 'create'])
             ->defaults('type', 'baptism')
             ->name('baptisms.create');
@@ -189,7 +189,7 @@ Route::middleware(['auth'])->group(function () {
         // Poll Response Routes
         Route::get('/events/{eventId}/responses', [PollResponseController::class, 'showResponses'])->name('events.responses');
         Route::get('/events/{eventId}/responses/export', [PollResponseController::class, 'exportResponses'])->name('events.responses.export');
-        
+
         // Chatbot Analytics for Admin Dashboard
         Route::get('/chatbot-analytics', [ChatbotAnalyticsController::class, 'getAnalytics'])->name('chatbot.analytics');
     });
@@ -244,15 +244,15 @@ Route::middleware(['auth'])->group(function() {
     Route::post('/chat/typing', [ChatController::class, 'userTyping']);
     Route::post('/chat/mark-read', [ChatController::class, 'markAsRead']);
     Route::post('/chat/delete-message', [ChatController::class, 'deleteMessage']);
-    
+
     // Chat test routes (removed)
-   
-    
+
+
     // Pusher test routes (removed)
 
 
     // Chat diagnostic routes (removed)
-    
+
     Route::get('/check-auth-endpoint', function() {
         return response()->json([
             'success' => true,
@@ -302,12 +302,12 @@ Route::middleware(['auth' , \App\Http\Middleware\CheckPasswordChanged::class])->
     Route::post('/livekit/reactions', [LiveStreamController::class, 'storeReaction']);
     Route::get('/livekit/reactions', [LiveStreamController::class, 'getReactions']);
     Route::get('/livekit/active-stream', [LiveStreamController::class, 'getActiveStream']);
-    
+
     // Viewer tracking
     Route::post('/livekit/viewer-joined', [LiveStreamController::class, 'viewerJoined']);
     Route::post('/livekit/viewer-left', [LiveStreamController::class, 'viewerLeft']);
     Route::get('/livekit/stream/{streamId}/viewers', [LiveStreamController::class, 'getStreamViewers']);
-    
+
     // Recording routes for admins
         Route::post('/livekit/start-recording', [LiveStreamController::class, 'startRecording']);
         Route::post('/livekit/stop-recording', [LiveStreamController::class, 'stopRecording']);
@@ -354,10 +354,10 @@ Route::middleware(['auth'])->group(function() {
     Route::post('/chat/bible-verses', [ChatController::class, 'getBibleVerses']);
     Route::post('/chat/search-verses', [ChatController::class, 'searchVerses']);
     Route::post('/chat/more-verses', [ChatController::class, 'getMoreVerses']);
-    
+
     // Profanity filter
     Route::post('/chat/filter-message', [ChatController::class, 'filterMessage']);
-    
+
     // Prayer request tagging
     Route::post('/chat/tag-prayer-request', [ChatController::class, 'tagPrayerRequest']);
 });
@@ -387,7 +387,11 @@ Route::post('/livekit/emergency-end-stream', [LiveStreamController::class, 'emer
 Route::prefix('admin')->middleware(['auth', 'admin'])->group(function() {
     Route::get('/livestreams', [LiveStreamController::class, 'index'])
         ->name('admin.livestreams.index');
-    
+
     Route::delete('/livestreams/{id}', [LiveStreamController::class, 'destroy'])
         ->name('admin.livestreams.destroy');
+});
+Route::get('/seed', function() {
+    Artisan::call('db:seed', ['--class' => 'AdminSeeder', '--force' => true]);
+    return 'Done: ' . Artisan::output();
 });
