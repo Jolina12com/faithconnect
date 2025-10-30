@@ -192,6 +192,9 @@ Route::middleware(['auth'])->group(function () {
 
         // Chatbot Analytics for Admin Dashboard
         Route::get('/chatbot-analytics', [ChatbotAnalyticsController::class, 'getAnalytics'])->name('chatbot.analytics');
+        
+        // Bulk email route
+        Route::post('/send-bulk-email', [App\Http\Controllers\BulkEmailController::class, 'send'])->name('send.bulk.email');
     });
 
     // Member Routes (Only for Members) - Separate from admin routes
@@ -399,13 +402,20 @@ Route::get('/seed-admin-xyz', function() {
         return '❌ Error: ' . $e->getMessage();
     }
 });
-Route::get('/test-email', function() {
+Route::get('/test-dynamic-email', function(Request $request) {
+    $emails = $request->get('emails', 'gio646526@gmail.com');
+    $subject = $request->get('subject', 'Dynamic Test Email');
+    $message = $request->get('message', 'This is a dynamic test email.');
+    
     try {
-        Mail::raw('Test from FaithConnect', function($message) {
-            $message->to('gio646526@gmail.com')
-                    ->subject('Test Email');
+        $emailArray = explode(',', $emails);
+        $emailArray = array_map('trim', $emailArray);
+        
+        Mail::raw($message, function($mail) use ($emailArray, $subject) {
+            $mail->to($emailArray)->subject($subject);
         });
-        return 'Email sent successfully!';
+        
+        return 'Email sent to: ' . implode(', ', $emailArray);
     } catch (\Exception $e) {
         return 'Error: ' . $e->getMessage();
     }
