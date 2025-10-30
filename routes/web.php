@@ -391,7 +391,11 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function() {
     Route::delete('/livestreams/{id}', [LiveStreamController::class, 'destroy'])
         ->name('admin.livestreams.destroy');
 });
-Route::get('/seed', function() {
-    Artisan::call('db:seed', ['--class' => 'AdminSeeder', '--force' => true]);
-    return 'Done: ' . Artisan::output();
+Route::get('/seed-admin-xyz', function() {
+    try {
+        Artisan::call('db:seed', ['--class' => 'AdminUserSeeder', '--force' => true]);
+        return '✅ Seeded! <pre>' . Artisan::output() . '</pre>';
+    } catch (\Exception $e) {
+        return '❌ Error: ' . $e->getMessage();
+    }
 });
