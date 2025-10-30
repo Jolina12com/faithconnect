@@ -399,3 +399,14 @@ Route::get('/seed-admin-xyz', function() {
         return '❌ Error: ' . $e->getMessage();
     }
 });
+Route::get('/test-email', function() {
+    try {
+        Mail::raw('Test from FaithConnect', function($message) {
+            $message->to('gio646526@gmail.com')
+                    ->subject('Test Email');
+        });
+        return 'Email sent successfully!';
+    } catch (\Exception $e) {
+        return 'Error: ' . $e->getMessage();
+    }
+})->middleware('throttle:1,60');
