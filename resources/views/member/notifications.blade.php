@@ -155,4 +155,4 @@
         });
     });
 </script>
-@endsectionn
+@endsection

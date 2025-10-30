@@ -311,7 +311,7 @@ class LiveStreamController extends Controller
         ]);
 
         $request->validate([
-            'video' => 'required|file|mimes:webm,mp4|max:512000',
+            'video' => 'required|file|mimes:webm,mp4,mov,avi,mkv|max:524288', // 512MB in KB
             'stream_id' => 'required|exists:live_streams,id'
         ]);
 
