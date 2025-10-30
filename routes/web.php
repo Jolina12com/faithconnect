@@ -411,5 +411,8 @@ Route::get('/test-email', function() {
     }
 })->middleware('throttle:10,1');
 
+// Auth routes
+Auth::routes();
+
 // Include verification routes
 require __DIR__.'/verification.php';
