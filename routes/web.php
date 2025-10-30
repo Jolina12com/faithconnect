@@ -409,4 +409,4 @@ Route::get('/test-email', function() {
     } catch (\Exception $e) {
         return 'Error: ' . $e->getMessage();
     }
-})->middleware('throttle:1,60');
+})->middleware('throttle:10,1');
