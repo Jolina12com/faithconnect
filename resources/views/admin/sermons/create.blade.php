@@ -774,6 +774,10 @@
                 if (roundedProgress === 100) {
                     setTimeout(() => {
                         progressBar.classList.remove('progress-bar-animated');
+                        // Auto-submit for regular uploads
+                        if (!document.querySelector('input[name="video_path"]')) {
+                            document.getElementById('uploadForm').submit();
+                        }
                     }, 500);
                 }
             }, 300);
@@ -797,24 +801,18 @@
                 resetVideoUpload();
             });
             uploader.setSuccessCallback((result) => {
-                console.log('Upload success result:', result);
-                
-                // Remove any existing video_path inputs
-                const existingInputs = document.querySelectorAll('input[name="video_path"]');
-                existingInputs.forEach(input => input.remove());
-                
                 if (result && result.path && result.path !== 'processing') {
-                    // Add video URL to form for immediate processing
+                    // Add video URL to form
                     const pathInput = document.createElement('input');
                     pathInput.type = 'hidden';
                     pathInput.name = 'video_path';
                     pathInput.value = result.path;
                     document.getElementById('uploadForm').appendChild(pathInput);
                     
-                    console.log('Added video_path to form:', result.path);
+                    // Auto-submit form after successful upload
+                    document.getElementById('uploadForm').submit();
                 } else if (result && result.processing) {
-                    // For background processing, show message but don't submit yet
-                    alert('Large file uploaded successfully! It\'s being processed in the background. You can continue filling the form and submit when ready.');
+                    alert('Large file uploaded! Processing in background.');
                 }
             });
             uploader.upload();
@@ -832,26 +830,14 @@
 
         // Form validation
         uploadForm.addEventListener('submit', function(e) {
-            // Calculate duration in seconds from minutes input if not already set
             if (durationMinutesInput.value && !durationInput.value) {
                 durationInput.value = durationMinutesInput.value * 60;
             }
-
-            // Check if video was uploaded via chunked upload
-            const videoPathInput = document.querySelector('input[name="video_path"]');
-            const regularVideoInput = document.querySelector('input[name="video"]');
             
-            if (!videoPathInput && (!regularVideoInput || !regularVideoInput.files.length)) {
-                e.preventDefault();
-                alert('Please upload a video file before submitting.');
-                return;
-            }
-
             if (!this.checkValidity()) {
                 e.preventDefault();
                 e.stopPropagation();
             }
-
             this.classList.add('was-validated');
         });
 
