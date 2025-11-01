@@ -1,9 +1,8 @@
 <?php
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Str;
+use Resend\Resend;
 
 Route::post('/send-verification', function (Request $request) {
     try {
@@ -21,11 +20,17 @@ Route::post('/send-verification', function (Request $request) {
         Cache::put("verification_code_{$email}", $code, 600);
         Cache::put("registration_data_{$email}", $request->all(), 600);
         
-        // Send email
-        Mail::send('emails.verification-code', ['code' => $code, 'name' => $request->first_name], function($message) use ($email) {
-            $message->to($email)
-                    ->subject('Email Verification Code - FaithConnect');
-        });
+        // Send email via Resend using existing template
+        $resend = new Resend(env('RESEND_API_KEY'));
+        
+        $html = view('emails.verification-code', ['code' => $code])->render();
+        
+        $resend->emails->send([
+            'from' => 'FaithConnect <onboarding@resend.dev>',
+            'to' => [$email],
+            'subject' => 'Email Verification Code - FaithConnect',
+            'html' => $html
+        ]);
 
         return response()->json([
             'success' => true,
