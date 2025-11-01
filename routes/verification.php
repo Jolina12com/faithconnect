@@ -27,7 +27,7 @@ Route::post('/send-verification', function (Request $request) {
             'from' => 'FaithConnect <onboarding@resend.dev>',
             'to' => [$email],
             'subject' => 'Email Verification Code - FaithConnect',
-            'html' => '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;"><div style="background: #4a6fa5; color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0;"><h1>Email Verification</h1></div><div style="background: white; padding: 40px; border: 1px solid #ddd;"><h2>Welcome!</h2><p>Your verification code is:</p><div style="background: #f8f9fa; border: 2px solid #4a6fa5; border-radius: 8px; padding: 20px; text-align: center; margin: 20px 0; font-size: 24px; font-weight: bold; color: #4a6fa5;">' . $code . '</div><p><strong>Important:</strong> This code expires in 10 minutes.</p></div></div>'
+            'text' => "Hi {$request->first_name}!\n\nYour verification code is: {$code}\n\nThis code expires in 10 minutes.\n\nThank you!"
         ]);
 
         return response()->json([
