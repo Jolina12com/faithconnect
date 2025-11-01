@@ -797,18 +797,24 @@
                 resetVideoUpload();
             });
             uploader.setSuccessCallback((result) => {
-                const hiddenInput = document.createElement('input');
-                hiddenInput.type = 'hidden';
-                hiddenInput.name = 'chunked_upload_id';
-                hiddenInput.value = uploader.uploadId;
-                document.getElementById('uploadForm').appendChild(hiddenInput);
-
-                if (result && result.path) {
+                console.log('Upload success result:', result);
+                
+                // Remove any existing video_path inputs
+                const existingInputs = document.querySelectorAll('input[name="video_path"]');
+                existingInputs.forEach(input => input.remove());
+                
+                if (result && result.path && result.path !== 'processing') {
+                    // Add video URL to form for immediate processing
                     const pathInput = document.createElement('input');
                     pathInput.type = 'hidden';
                     pathInput.name = 'video_path';
                     pathInput.value = result.path;
                     document.getElementById('uploadForm').appendChild(pathInput);
+                    
+                    console.log('Added video_path to form:', result.path);
+                } else if (result && result.processing) {
+                    // For background processing, show message but don't submit yet
+                    alert('Large file uploaded successfully! It\'s being processed in the background. You can continue filling the form and submit when ready.');
                 }
             });
             uploader.upload();
@@ -829,6 +835,16 @@
             // Calculate duration in seconds from minutes input if not already set
             if (durationMinutesInput.value && !durationInput.value) {
                 durationInput.value = durationMinutesInput.value * 60;
+            }
+
+            // Check if video was uploaded via chunked upload
+            const videoPathInput = document.querySelector('input[name="video_path"]');
+            const regularVideoInput = document.querySelector('input[name="video"]');
+            
+            if (!videoPathInput && (!regularVideoInput || !regularVideoInput.files.length)) {
+                e.preventDefault();
+                alert('Please upload a video file before submitting.');
+                return;
             }
 
             if (!this.checkValidity()) {
