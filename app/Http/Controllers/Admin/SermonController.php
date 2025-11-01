@@ -89,7 +89,9 @@ class SermonController extends Controller
             // Handle file uploads to Cloudinary
             if ($request->filled('video_path')) {
                 $sermon->video_path = $request->input('video_path');
+                Log::info('Using pre-uploaded video path: ' . $request->input('video_path'));
             } elseif ($request->hasFile('video')) {
+                Log::info('Uploading new video file to Cloudinary');
                 $uploadedFile = Cloudinary::upload($request->file('video')->getRealPath(), [
                     'folder' => 'sermons/videos',
                     'resource_type' => 'video'

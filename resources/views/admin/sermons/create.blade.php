@@ -839,6 +839,13 @@
                 return;
             }
             
+            // If video already uploaded to Cloudinary, remove file input to prevent re-upload
+            const videoPathInput = document.querySelector('input[name="video_path"]');
+            if (videoPathInput && videoPathInput.value) {
+                videoInput.removeAttribute('name');
+                videoInput.disabled = true;
+            }
+            
             if (!this.checkValidity()) {
                 e.preventDefault();
                 e.stopPropagation();
