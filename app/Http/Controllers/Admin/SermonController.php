@@ -151,8 +151,11 @@ class SermonController extends Controller
             
             DB::commit();
             
+            // Clear any caches
+            \Illuminate\Support\Facades\Cache::flush();
+            
             return redirect()->route('admin.sermons.index')
-                ->with('success', 'Sermon created successfully!');
+                ->with('success', 'Sermon "' . $sermon->title . '" created successfully!');
                 
         } catch (\Exception $e) {
             DB::rollBack();
