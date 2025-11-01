@@ -727,7 +727,7 @@
         function startChunkedUpload(file) {
             uploadProgress.classList.remove('d-none');
             // Use 5MB chunks for better throughput
-            const uploader = new ChunkedUploader(file, '/admin/sermons/upload-chunk', 5 * 1024 * 1024);
+            const uploader = new ChunkedUploader(file, '/admin/sermons/upload-chunk', 1 * 1024 * 1024);
             uploader.setProgressCallback((progress) => {
                 progressBar.style.width = progress + '%';
                 progressBar.setAttribute('aria-valuenow', progress);

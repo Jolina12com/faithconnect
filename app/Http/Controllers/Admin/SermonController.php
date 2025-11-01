@@ -297,6 +297,13 @@ class SermonController extends Controller
     public function uploadChunk(Request $request)
     {
         try {
+            Log::info('Raw request info', [
+                'content_length' => $request->header('Content-Length'),
+                'content_type' => $request->header('Content-Type'),
+                'method' => $request->method(),
+                'memory_usage' => memory_get_usage(true) / 1024 / 1024 . ' MB'
+            ]);
+
             Log::info('Chunk upload request received', [
                 'uploadId' => $request->input('uploadId'),
                 'chunkIndex' => $request->input('chunkIndex'),
@@ -307,7 +314,7 @@ class SermonController extends Controller
             ]);
 
             $request->validate([
-                'chunk' => 'required|file|max:10240', // 10MB max per chunk
+                'chunk' => 'required|file|max:5120', // 5MB max per chunk
                 'chunkIndex' => 'required|integer|min:0',
                 'totalChunks' => 'required|integer|min:1',
                 'uploadId' => 'required|string',
