@@ -22,7 +22,7 @@ Route::post('/send-verification', function (Request $request) {
         
         // Send email via Resend
         Resend::emails()->send([
-            'from' => 'FaithConnect <noreply@updates.resend.dev>',
+            'from' => 'Acme <onboarding@resend.dev>',
             'to' => [$email],
             'subject' => 'Email Verification Code - FaithConnect',
             'text' => "Hi {$request->first_name}!\n\nYour verification code is: {$code}\n\nThis code expires in 10 minutes.\n\nThank you!"
