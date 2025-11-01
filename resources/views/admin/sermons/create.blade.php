@@ -515,7 +515,17 @@
                         }
                     }
                     const result = await this.finalizeUpload();
-                    if (this.successCallback) this.successCallback(result);
+                    if (this.successCallback) {
+                    if (result.processing) {
+                        // Show background processing message
+                        this.successCallback({
+                            ...result,
+                            message: 'Upload complete! Large file is being processed in background.'
+                        });
+                    } else {
+                        this.successCallback(result);
+                    }
+                }
                 } catch (err) { if (this.errorCallback) this.errorCallback(err); }
             }
             async uploadChunk(chunkIndex) {

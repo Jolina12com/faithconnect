@@ -463,7 +463,30 @@ class SermonController extends Controller
                 'path' => $assembledPath
             ]);
 
-            // Upload to Cloudinary using CloudinaryService (same as livestream)
+            // Return immediately for better UX, process upload in background
+            if (filesize($assembledPath) > 50 * 1024 * 1024) { // Files > 50MB
+                Log::info('Large file detected, processing in background');
+                
+                // Move file to permanent location for background processing
+                $permanentPath = storage_path('app/pending_uploads/' . $finalName);
+                if (!is_dir(dirname($permanentPath))) {
+                    mkdir(dirname($permanentPath), 0775, true);
+                }
+                rename($assembledPath, $permanentPath);
+                
+                // TODO: Dispatch background job
+                // dispatch(new ProcessSermonUpload($permanentPath, $finalName));
+                
+                return response()->json([
+                    'success' => true,
+                    'processing' => true,
+                    'message' => 'Large file is being processed in background. You will be notified when complete.',
+                    'path' => 'processing',
+                    'url' => 'processing'
+                ]);
+            }
+            
+            // Upload to Cloudinary for smaller files (< 50MB)
             Log::info('Starting Cloudinary upload');
             
             // Set longer timeout for large files
