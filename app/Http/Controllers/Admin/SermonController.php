@@ -397,16 +397,18 @@ class SermonController extends Controller
             $tempDir = storage_path('app/chunks/' . $uploadId);
             
             if (!is_dir($tempDir)) {
+                Log::error('Upload session not found: ' . $tempDir);
                 return response()->json([
                     'success' => false,
                     'message' => 'Upload session not found'
                 ], 400);
             }
 
-            // Ensure all chunks exist
+            // Verify all chunks exist
             for ($i = 0; $i < $totalChunks; $i++) {
                 $chunkFile = $tempDir . DIRECTORY_SEPARATOR . $i . '.part';
                 if (!file_exists($chunkFile)) {
+                    Log::error('Missing chunk: ' . $i);
                     return response()->json([
                         'success' => false,
                         'message' => 'Missing chunk ' . $i
@@ -414,16 +416,23 @@ class SermonController extends Controller
                 }
             }
 
-            // Create a unique destination filename
+            // Create unique filename
             $extension = pathinfo($originalName, PATHINFO_EXTENSION);
             $safeBase = pathinfo($originalName, PATHINFO_FILENAME);
             $safeBase = preg_replace('/[^A-Za-z0-9_\-]/', '_', $safeBase);
-            $finalName = $safeBase . '_' . time() . '_' . $uploadId . '.' . $extension;
+            $finalName = $safeBase . '_' . time() . '.' . $extension;
 
-            // Concatenate chunks into a temp file
-            $assembledPath = storage_path('app/chunks/' . $uploadId . '_' . $finalName);
-            $output = fopen($assembledPath, 'wb');
+            // Assemble file path
+            $assembledPath = storage_path('app/chunks/' . $uploadId . '_assembled.' . $extension);
             
+            Log::info('Starting file assembly', [
+                'uploadId' => $uploadId,
+                'totalChunks' => $totalChunks,
+                'assembledPath' => $assembledPath
+            ]);
+
+            // Concatenate chunks
+            $output = fopen($assembledPath, 'wb');
             if (!$output) {
                 throw new \Exception('Failed to create output file');
             }
@@ -435,23 +444,45 @@ class SermonController extends Controller
                     fclose($output);
                     throw new \Exception('Failed to open chunk ' . $i);
                 }
-                stream_copy_to_stream($chunk, $output);
+                
+                // Copy chunk to output
+                while (!feof($chunk)) {
+                    $buffer = fread($chunk, 8192); // Read 8KB at a time
+                    fwrite($output, $buffer);
+                }
                 fclose($chunk);
+                
+                // Delete chunk immediately after copying to save space
+                @unlink($chunkPath);
             }
             fclose($output);
 
-            // Upload to Cloudinary
+            Log::info('File assembled successfully', [
+                'size' => filesize($assembledPath),
+                'path' => $assembledPath
+            ]);
+
+            // Upload to Cloudinary with increased timeout
+            Log::info('Starting Cloudinary upload');
+            
+            // Set longer timeout for large files
+            ini_set('max_execution_time', 600); // 10 minutes
+            
             $uploadedFile = Cloudinary::upload($assembledPath, [
                 'folder' => 'sermons/videos',
                 'resource_type' => 'video',
-                'public_id' => pathinfo($finalName, PATHINFO_FILENAME)
+                'public_id' => pathinfo($finalName, PATHINFO_FILENAME),
+                'chunk_size' => 6000000, // 6MB chunks to Cloudinary
+                'timeout' => 600 // 10 minute timeout
             ]);
+            
             $storagePath = $uploadedFile->getSecurePath();
 
-            // Cleanup temp files
-            for ($i = 0; $i < $totalChunks; $i++) {
-                @unlink($tempDir . DIRECTORY_SEPARATOR . $i . '.part');
-            }
+            Log::info('Cloudinary upload successful', [
+                'url' => $storagePath
+            ]);
+
+            // Cleanup
             @unlink($assembledPath);
             @rmdir($tempDir);
 
@@ -462,9 +493,13 @@ class SermonController extends Controller
             ]);
             
         } catch (\Exception $e) {
-            Log::error('Finalize upload error: ' . $e->getMessage());
+            Log::error('Finalize upload error', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'uploadId' => $request->input('uploadId') ?? 'unknown'
+            ]);
             
-            // Attempt cleanup on error
+            // Cleanup on error
             if (isset($tempDir) && is_dir($tempDir)) {
                 array_map('unlink', glob("$tempDir/*.*"));
                 @rmdir($tempDir);
