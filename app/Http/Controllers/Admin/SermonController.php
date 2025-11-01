@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use App\Services\CloudinaryService;
 
 class SermonController extends Controller
 {
@@ -462,21 +463,25 @@ class SermonController extends Controller
                 'path' => $assembledPath
             ]);
 
-            // Upload to Cloudinary with increased timeout
+            // Upload to Cloudinary using CloudinaryService (same as livestream)
             Log::info('Starting Cloudinary upload');
             
             // Set longer timeout for large files
-            ini_set('max_execution_time', 600); // 10 minutes
+            @ini_set('max_execution_time', 900); // 15 minutes like livestream
+            @set_time_limit(900);
             
-            $uploadedFile = Cloudinary::upload($assembledPath, [
-                'folder' => 'sermons/videos',
-                'resource_type' => 'video',
-                'public_id' => pathinfo($finalName, PATHINFO_FILENAME),
-                'chunk_size' => 6000000, // 6MB chunks to Cloudinary
-                'timeout' => 600 // 10 minute timeout
-            ]);
+            $cloudinaryService = app(CloudinaryService::class);
+            $result = $cloudinaryService->uploadRecording($assembledPath, $finalName, 'sermons/videos');
             
-            $storagePath = $uploadedFile->getSecurePath();
+            if (!$result) {
+                throw new \Exception('Cloudinary upload returned null');
+            }
+            
+            $storagePath = $result['secure_url'] ?? ($result['url'] ?? null);
+            
+            if (!$storagePath) {
+                throw new \Exception('No URL returned from Cloudinary upload');
+            }
 
             Log::info('Cloudinary upload successful', [
                 'url' => $storagePath

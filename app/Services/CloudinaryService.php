@@ -40,19 +40,23 @@ class CloudinaryService
         $this->cloudinary = new Cloudinary($config);
     }
 
-    public function uploadRecording($filePath, $fileName)
+    public function uploadRecording($filePath, $fileName, $folder = 'livestream_recordings')
     {
         try {
             Log::info('Cloudinary upload starting', [
                 'file' => $fileName,
                 'size' => filesize($filePath),
-                'path' => $filePath
+                'path' => $filePath,
+                'folder' => $folder
             ]);
+            
+            // Determine public_id based on folder
+            $publicIdPrefix = $folder === 'sermons/videos' ? 'sermons/' : 'livestreams/';
             
             $result = $this->cloudinary->uploadApi()->upload($filePath, [
                 'resource_type' => 'video',
-                'public_id' => 'livestreams/' . pathinfo($fileName, PATHINFO_FILENAME),
-                'folder' => 'livestream_recordings',
+                'public_id' => $publicIdPrefix . pathinfo($fileName, PATHINFO_FILENAME),
+                'folder' => $folder,
                 'chunk_size' => 6000000, // 6MB chunks (minimum 5MB required by Cloudinary)
                 'timeout' => 600, // 10 minutes timeout for larger/slow networks
             ]);
