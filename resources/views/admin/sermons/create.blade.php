@@ -774,10 +774,6 @@
                 if (roundedProgress === 100) {
                     setTimeout(() => {
                         progressBar.classList.remove('progress-bar-animated');
-                        // Auto-submit for regular uploads
-                        if (!document.querySelector('input[name="video_path"]')) {
-                            document.getElementById('uploadForm').submit();
-                        }
                     }, 500);
                 }
             }, 300);
@@ -809,8 +805,8 @@
                     pathInput.value = result.path;
                     document.getElementById('uploadForm').appendChild(pathInput);
                     
-                    // Auto-submit form after successful upload
-                    document.getElementById('uploadForm').submit();
+                    // Show success message
+                    alert('Video uploaded successfully! Please fill in the sermon details and click Upload Sermon.');
                 } else if (result && result.processing) {
                     alert('Large file uploaded! Processing in background.');
                 }
@@ -832,6 +828,15 @@
         uploadForm.addEventListener('submit', function(e) {
             if (durationMinutesInput.value && !durationInput.value) {
                 durationInput.value = durationMinutesInput.value * 60;
+            }
+            
+            // Check if title is filled
+            const titleInput = document.getElementById('title');
+            if (!titleInput.value.trim()) {
+                e.preventDefault();
+                alert('Please enter a sermon title before submitting.');
+                titleInput.focus();
+                return;
             }
             
             if (!this.checkValidity()) {
