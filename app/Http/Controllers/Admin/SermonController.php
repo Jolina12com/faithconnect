@@ -301,7 +301,9 @@ class SermonController extends Controller
                 'uploadId' => $request->input('uploadId'),
                 'chunkIndex' => $request->input('chunkIndex'),
                 'totalChunks' => $request->input('totalChunks'),
-                'fileName' => $request->input('fileName')
+                'fileName' => $request->input('fileName'),
+                'hasChunk' => $request->hasFile('chunk'),
+                'chunkSize' => $request->hasFile('chunk') ? $request->file('chunk')->getSize() : 0
             ]);
 
             $request->validate([
@@ -316,11 +318,19 @@ class SermonController extends Controller
             $chunkIndex = (int) $request->input('chunkIndex');
             $fileName = basename($request->input('fileName'));
 
+            // Ensure base chunks directory exists
+            $baseChunksDir = storage_path('app/chunks');
+            if (!is_dir($baseChunksDir)) {
+                if (!mkdir($baseChunksDir, 0775, true)) {
+                    throw new \Exception('Failed to create base chunks directory: ' . $baseChunksDir);
+                }
+            }
+
             // Temporary directory per upload
-            $tempDir = storage_path('app/chunks/' . $uploadId);
+            $tempDir = $baseChunksDir . DIRECTORY_SEPARATOR . $uploadId;
             if (!is_dir($tempDir)) {
                 if (!mkdir($tempDir, 0775, true)) {
-                    throw new \Exception('Failed to create chunk directory: ' . $tempDir);
+                    throw new \Exception('Failed to create upload directory: ' . $tempDir);
                 }
             }
 
