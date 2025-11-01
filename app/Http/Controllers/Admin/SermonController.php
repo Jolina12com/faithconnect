@@ -44,6 +44,14 @@ class SermonController extends Controller
      */
     public function store(Request $request)
     {
+        Log::info('Sermon store request received', [
+            'has_video_file' => $request->hasFile('video'),
+            'has_video_path' => $request->filled('video_path'),
+            'video_path_value' => $request->input('video_path'),
+            'title' => $request->input('title'),
+            'all_inputs' => $request->except(['video', 'audio', 'thumbnail'])
+        ]);
+        
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -104,7 +112,19 @@ class SermonController extends Controller
                 $sermon->thumbnail_path = $uploadedFile->getSecurePath();
             }
 
+            Log::info('Saving sermon to database', [
+                'title' => $sermon->title,
+                'video_path' => $sermon->video_path,
+                'audio_path' => $sermon->audio_path,
+                'thumbnail_path' => $sermon->thumbnail_path
+            ]);
+            
             $sermon->save();
+            
+            Log::info('Sermon saved successfully', [
+                'sermon_id' => $sermon->id,
+                'title' => $sermon->title
+            ]);
             
             // Sync topics
             if ($request->has('topics') && is_array($request->topics)) {
