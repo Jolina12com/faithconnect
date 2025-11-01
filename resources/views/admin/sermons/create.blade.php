@@ -584,8 +584,8 @@
                     durationInput.value = durationSec;
                 };
 
-                // Start chunked upload for large files
-                if (file.size > 20 * 1024 * 1024) { // 20MB threshold
+                // Start chunked upload for files larger than 8MB
+                if (file.size > 8 * 1024 * 1024) { // 8MB threshold
                     startChunkedUpload(file);
                 } else {
                     simulateUploadProgress();
