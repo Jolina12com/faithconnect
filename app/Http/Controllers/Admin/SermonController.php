@@ -297,8 +297,15 @@ class SermonController extends Controller
     public function uploadChunk(Request $request)
     {
         try {
+            Log::info('Chunk upload request received', [
+                'uploadId' => $request->input('uploadId'),
+                'chunkIndex' => $request->input('chunkIndex'),
+                'totalChunks' => $request->input('totalChunks'),
+                'fileName' => $request->input('fileName')
+            ]);
+
             $request->validate([
-                'chunk' => 'required|file',
+                'chunk' => 'required|file|max:10240', // 10MB max per chunk
                 'chunkIndex' => 'required|integer|min:0',
                 'totalChunks' => 'required|integer|min:1',
                 'uploadId' => 'required|string',
@@ -313,13 +320,23 @@ class SermonController extends Controller
             $tempDir = storage_path('app/chunks/' . $uploadId);
             if (!is_dir($tempDir)) {
                 if (!mkdir($tempDir, 0775, true)) {
-                    throw new \Exception('Failed to create chunk directory');
+                    throw new \Exception('Failed to create chunk directory: ' . $tempDir);
                 }
             }
 
             // Store chunk as sequential file
+            $chunkFile = $request->file('chunk');
             $chunkPath = $tempDir . DIRECTORY_SEPARATOR . $chunkIndex . '.part';
-            $request->file('chunk')->move($tempDir, $chunkIndex . '.part');
+            
+            if (!$chunkFile->move($tempDir, $chunkIndex . '.part')) {
+                throw new \Exception('Failed to move chunk file to: ' . $chunkPath);
+            }
+
+            Log::info('Chunk uploaded successfully', [
+                'chunkIndex' => $chunkIndex,
+                'chunkPath' => $chunkPath,
+                'chunkSize' => filesize($chunkPath)
+            ]);
 
             return response()->json([
                 'success' => true,
@@ -327,8 +344,16 @@ class SermonController extends Controller
                 'message' => 'Chunk received'
             ]);
             
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('Chunk upload validation error', ['errors' => $e->errors()]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed: ' . implode(', ', array_flatten($e->errors()))
+            ], 422);
         } catch (\Exception $e) {
-            Log::error('Chunk upload error: ' . $e->getMessage());
+            Log::error('Chunk upload error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
             return response()->json([
                 'success' => false,
                 'message' => 'Chunk upload failed: ' . $e->getMessage()
