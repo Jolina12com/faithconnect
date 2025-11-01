@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Resend\Resend;
+use Resend\Laravel\Facades\Resend;
 
 Route::post('/send-verification', function (Request $request) {
     try {
@@ -21,9 +21,7 @@ Route::post('/send-verification', function (Request $request) {
         Cache::put("registration_data_{$email}", $request->all(), 600);
         
         // Send email via Resend
-        $resend = new Resend(env('RESEND_API_KEY'));
-        
-        $resend->emails->send([
+        Resend::emails()->send([
             'from' => 'FaithConnect <onboarding@resend.dev>',
             'to' => [$email],
             'subject' => 'Email Verification Code - FaithConnect',
