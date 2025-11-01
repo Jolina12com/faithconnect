@@ -528,20 +528,65 @@
                 formData.append('totalChunks', this.totalChunks);
                 formData.append('uploadId', this.uploadId);
                 formData.append('fileName', this.file.name);
-                formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
-                const res = await fetch('/admin/sermons/upload-chunk', { method: 'POST', body: formData });
-                if (!res.ok) throw new Error(`Chunk upload failed: ${res.statusText}`);
-                return res.json();
+                
+                // Get CSRF token
+                const csrfToken = document.querySelector('meta[name="csrf-token"]');
+                if (csrfToken) {
+                    formData.append('_token', csrfToken.content);
+                } else {
+                    console.error('CSRF token not found in page');
+                }
+                
+                console.log(`Uploading chunk ${chunkIndex + 1}/${this.totalChunks}, size: ${chunk.size} bytes`);
+                
+                const res = await fetch('/admin/sermons/upload-chunk', { 
+                    method: 'POST', 
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    console.error('Chunk upload response:', errorText);
+                    throw new Error(`Chunk upload failed: ${res.status} ${res.statusText}`);
+                }
+                
+                const result = await res.json();
+                console.log(`Chunk ${chunkIndex} uploaded successfully`, result);
+                return result;
             }
             async finalizeUpload() {
                 const formData = new FormData();
                 formData.append('uploadId', this.uploadId);
                 formData.append('fileName', this.file.name);
                 formData.append('totalChunks', this.totalChunks);
-                formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
-                const res = await fetch('/admin/sermons/finalize-upload', { method: 'POST', body: formData });
-                if (!res.ok) throw new Error(`Upload finalization failed: ${res.statusText}`);
-                return res.json();
+                
+                const csrfToken = document.querySelector('meta[name="csrf-token"]');
+                if (csrfToken) {
+                    formData.append('_token', csrfToken.content);
+                }
+                
+                console.log('Finalizing upload:', this.uploadId);
+                
+                const res = await fetch('/admin/sermons/finalize-upload', { 
+                    method: 'POST', 
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    console.error('Finalize response:', errorText);
+                    throw new Error(`Upload finalization failed: ${res.status} ${res.statusText}`);
+                }
+                
+                const result = await res.json();
+                console.log('Upload finalized:', result);
+                return result;
             }
         }
 
