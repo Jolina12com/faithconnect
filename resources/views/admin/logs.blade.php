@@ -11,7 +11,7 @@
                         <div class="d-flex flex-column flex-md-row gap-2 w-100 w-md-auto">
                             <select id="actionFilter" class="form-control form-control-sm mb-2 mb-md-0">
                                 <option value="">All Actions</option>
-                                <option value="Created">Created</option>
+                                <optipon value="Created">Created</option>
                                 <option value="Updated">Updated</option>
                                 <option value="Deleted">Deleted</option>
                                 <option value="Accessed">Accessed</option>

@@ -7,7 +7,7 @@
 
     @if ($sermon->video_path)
         <video width="100%" height="auto" controls>
-            <source src="{{ asset('storage/' . $sermon->video_path) }}" type="video/mp4">
+            <source src="{{ $sermon->video_path }}" type="video/mp4">
             Your browser does not support the video tag.
         </video>
     @else

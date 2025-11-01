@@ -15,6 +15,7 @@ use App\Notifications\NewSermonNotification;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class SermonController extends Controller
 {
@@ -76,19 +77,30 @@ class SermonController extends Controller
             $sermon->view_count = 0;
             $sermon->download_count = 0;
 
-            // Handle file uploads
+            // Handle file uploads to Cloudinary
             if ($request->filled('video_path')) {
                 $sermon->video_path = $request->input('video_path');
             } elseif ($request->hasFile('video')) {
-                $sermon->video_path = $request->file('video')->store('sermons/videos', 'public');
+                $uploadedFile = Cloudinary::upload($request->file('video')->getRealPath(), [
+                    'folder' => 'sermons/videos',
+                    'resource_type' => 'video'
+                ]);
+                $sermon->video_path = $uploadedFile->getSecurePath();
             }
 
             if ($request->hasFile('audio')) {
-                $sermon->audio_path = $request->file('audio')->store('sermons/audios', 'public');
+                $uploadedFile = Cloudinary::upload($request->file('audio')->getRealPath(), [
+                    'folder' => 'sermons/audios',
+                    'resource_type' => 'video'
+                ]);
+                $sermon->audio_path = $uploadedFile->getSecurePath();
             }
 
             if ($request->hasFile('thumbnail')) {
-                $sermon->thumbnail_path = $request->file('thumbnail')->store('sermons/thumbnails', 'public');
+                $uploadedFile = Cloudinary::upload($request->file('thumbnail')->getRealPath(), [
+                    'folder' => 'sermons/thumbnails'
+                ]);
+                $sermon->thumbnail_path = $uploadedFile->getSecurePath();
             }
 
             $sermon->save();
@@ -124,16 +136,8 @@ class SermonController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             
-            // Clean up uploaded files if transaction fails
-            if (isset($sermon->video_path) && $sermon->video_path) {
-                Storage::disk('public')->delete($sermon->video_path);
-            }
-            if (isset($sermon->audio_path) && $sermon->audio_path) {
-                Storage::disk('public')->delete($sermon->audio_path);
-            }
-            if (isset($sermon->thumbnail_path) && $sermon->thumbnail_path) {
-                Storage::disk('public')->delete($sermon->thumbnail_path);
-            }
+            // Note: Cloudinary files are not cleaned up on transaction failure
+            // as they are managed by Cloudinary's auto-cleanup policies
             
             Log::error('Error creating sermon: ' . $e->getMessage() . ' | Trace: ' . $e->getTraceAsString());
             
@@ -209,26 +213,28 @@ class SermonController extends Controller
             $sermon->featured = $request->has('featured') ? 1 : 0;
             $sermon->series_id = $request->series_id;
 
-            // Handle file uploads
+            // Handle file uploads to Cloudinary
             if ($request->hasFile('video')) {
-                $sermon->video_path = $request->file('video')->store('sermons/videos', 'public');
-                if ($oldVideo) {
-                    Storage::disk('public')->delete($oldVideo);
-                }
+                $uploadedFile = Cloudinary::upload($request->file('video')->getRealPath(), [
+                    'folder' => 'sermons/videos',
+                    'resource_type' => 'video'
+                ]);
+                $sermon->video_path = $uploadedFile->getSecurePath();
             }
 
             if ($request->hasFile('audio')) {
-                $sermon->audio_path = $request->file('audio')->store('sermons/audios', 'public');
-                if ($oldAudio) {
-                    Storage::disk('public')->delete($oldAudio);
-                }
+                $uploadedFile = Cloudinary::upload($request->file('audio')->getRealPath(), [
+                    'folder' => 'sermons/audios',
+                    'resource_type' => 'video'
+                ]);
+                $sermon->audio_path = $uploadedFile->getSecurePath();
             }
 
             if ($request->hasFile('thumbnail')) {
-                $sermon->thumbnail_path = $request->file('thumbnail')->store('sermons/thumbnails', 'public');
-                if ($oldThumbnail) {
-                    Storage::disk('public')->delete($oldThumbnail);
-                }
+                $uploadedFile = Cloudinary::upload($request->file('thumbnail')->getRealPath(), [
+                    'folder' => 'sermons/thumbnails'
+                ]);
+                $sermon->thumbnail_path = $uploadedFile->getSecurePath();
             }
 
             $sermon->save();
@@ -264,27 +270,13 @@ class SermonController extends Controller
         try {
             $sermon = Sermon::findOrFail($id);
 
-            // Store file paths before deletion
-            $videoPath = $sermon->video_path;
-            $audioPath = $sermon->audio_path;
-            $thumbnailPath = $sermon->thumbnail_path;
-
             // Detach relations
             $sermon->topics()->detach();
 
             // Delete sermon record
             $sermon->forceDelete();
 
-            // Delete associated files after successful DB deletion
-            if ($videoPath) {
-                Storage::disk('public')->delete($videoPath);
-            }
-            if ($audioPath) {
-                Storage::disk('public')->delete($audioPath);
-            }
-            if ($thumbnailPath) {
-                Storage::disk('public')->delete($thumbnailPath);
-            }
+            // Note: Cloudinary files are managed by Cloudinary's lifecycle policies
 
             DB::commit();
 
@@ -406,9 +398,13 @@ class SermonController extends Controller
             }
             fclose($output);
 
-            // Move to public disk
-            $storagePath = 'sermons/videos/' . $finalName;
-            Storage::disk('public')->put($storagePath, file_get_contents($assembledPath));
+            // Upload to Cloudinary
+            $uploadedFile = Cloudinary::upload($assembledPath, [
+                'folder' => 'sermons/videos',
+                'resource_type' => 'video',
+                'public_id' => pathinfo($finalName, PATHINFO_FILENAME)
+            ]);
+            $storagePath = $uploadedFile->getSecurePath();
 
             // Cleanup temp files
             for ($i = 0; $i < $totalChunks; $i++) {
@@ -420,7 +416,7 @@ class SermonController extends Controller
             return response()->json([
                 'success' => true,
                 'path' => $storagePath,
-                'url' => Storage::disk('public')->url($storagePath)
+                'url' => $storagePath
             ]);
             
         } catch (\Exception $e) {

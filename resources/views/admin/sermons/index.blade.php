@@ -156,15 +156,15 @@
                                         @if($sermon->video_path)
                                             <div class="sermon-preview me-2">
                                                 <video width="80" height="45" class="rounded shadow-sm">
-                                                    <source src="{{ asset('storage/' . $sermon->video_path) }}" type="video/mp4">
+                                                    <source src="{{ $sermon->video_path }}" type="video/mp4">
                                                 </video>
-                                                <div class="play-overlay" data-video="{{ asset('storage/' . $sermon->video_path) }}">
+                                                <div class="play-overlay" data-video="{{ $sermon->video_path }}">
                                                     <i class="fas fa-play-circle"></i>
                                                 </div>
                                             </div>
                                         @endif
                                         @if($sermon->audio_path)
-                                            <button class="btn btn-sm btn-outline-info" data-audio="{{ asset('storage/' . $sermon->audio_path) }}">
+                                            <button class="btn btn-sm btn-outline-info" data-audio="{{ $sermon->audio_path }}">
                                                 <i class="fas fa-headphones"></i>
                                             </button>
                                         @endif

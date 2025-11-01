@@ -100,7 +100,7 @@
                             <label class="form-label fw-bold">Current Video</label>
                             <div class="ratio ratio-16x9 mb-2">
                                 <video controls class="rounded">
-                                    <source src="{{ asset('storage/' . $sermon->video_path) }}" type="video/mp4">
+                                    <source src="{{ $sermon->video_path }}" type="video/mp4">
                                     Your browser does not support the video tag.
                                 </video>
                             </div>
@@ -131,7 +131,7 @@
                             <label class="form-label fw-bold">Current Audio</label>
                             <div class="mb-2">
                                 <audio controls class="w-100">
-                                    <source src="{{ asset('storage/' . $sermon->audio_path) }}" type="audio/mpeg">
+                                    <source src="{{ $sermon->audio_path }}" type="audio/mpeg">
                                     Your browser does not support the audio element.
                                 </audio>
                             </div>

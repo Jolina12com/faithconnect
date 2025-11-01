@@ -81,18 +81,8 @@ class Sermon extends Model
             }
         });
 
-        // Only delete files when sermon is force deleted
-        static::forceDeleting(function ($sermon) {
-            if ($sermon->video_path) {
-                Storage::delete($sermon->video_path);
-            }
-            if ($sermon->audio_path) {
-                Storage::delete($sermon->audio_path);
-            }
-            if ($sermon->thumbnail_path) {
-                Storage::delete($sermon->thumbnail_path);
-            }
-        });
+        // Note: Cloudinary files are managed by Cloudinary's lifecycle policies
+        // No manual cleanup needed on model deletion
     }
 
     /**
