@@ -26,10 +26,9 @@ Route::post('/send-verification', function (Request $request) {
         Cache::put("verification_code_{$email}", $code, 600);
         Cache::put("registration_data_{$email}", $request->all(), 600);
         
-        // Send email using Blade template
-        Mail::send('emails.verification-code', ['code' => $code, 'name' => $firstName], function($message) use ($email, $firstName) {
-            $message->to($email, $firstName)
-                    ->subject('Email Verification Code - FaithConnect');
+        // Send simple text email
+        Mail::raw("Hi {$firstName}!\n\nYour verification code is: {$code}\n\nThis code expires in 10 minutes.\n\nThank you!", function($message) use ($email) {
+            $message->to($email)->subject('Email Verification Code - FaithConnect');
         });
 
         // Check if email was sent successfully
