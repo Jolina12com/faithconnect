@@ -39,9 +39,7 @@ Route::get('/', function () {
 // Authentication routes (login, register, logout)
 Auth::routes();
 
-// Email verification routes
-Route::post('/send-verification', [RegisterController::class, 'sendVerificationCode'])->name('send-verification');
-Route::post('/verify-registration', [RegisterController::class, 'verifyAndRegister'])->name('verify-registration');
+// Email verification routes are in verification.php
 
 // User Dashboard (Authenticated users)
 Route::middleware(['auth'])->group(function () {
