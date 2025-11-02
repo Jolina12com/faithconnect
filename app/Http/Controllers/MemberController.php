@@ -109,13 +109,15 @@ class MemberController extends Controller
 
             // Send email with temporary password
             try {
-                Mail::to($validatedData['email'])->send(
-                    new TemporaryPasswordMail(
-                        $validatedData['first_name'] . ' ' . $validatedData['last_name'],
-                        $validatedData['email'],
-                        $defaultPassword
-                    )
-                );
+                Mail::send('emails.temporary-password', [
+                    'memberName' => $validatedData['first_name'] . ' ' . $validatedData['last_name'],
+                    'email' => $validatedData['email'],
+                    'password' => $defaultPassword
+                ], function($message) use ($validatedData) {
+                    $message->to($validatedData['email'])
+                            ->subject('Welcome to Our Church - Your Login Details')
+                            ->from('gio646526@gmail.com', 'FaithConnect');
+                });
                 $emailSent = true;
             } catch (\Exception $e) {
                 $emailSent = false;
