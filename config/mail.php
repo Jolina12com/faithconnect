@@ -14,7 +14,7 @@ return [
     |
     */
 
-    'default' => env('MAIL_MAILER', 'log'),
+    'default' => env('MAIL_MAILER', 'sendgrid'),
 
     /*
     |--------------------------------------------------------------------------
@@ -36,6 +36,10 @@ return [
     */
 
     'mailers' => [
+
+        'sendgrid' => [
+            'transport' => 'sendgrid',
+        ],
 
         'smtp' => [
             'transport' => 'smtp',
@@ -82,7 +86,7 @@ return [
         'failover' => [
             'transport' => 'failover',
             'mailers' => [
-                'smtp',
+                'sendgrid',
                 'log',
             ],
         ],
@@ -109,8 +113,8 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
-        'name' => env('MAIL_FROM_NAME', 'Example'),
+        'address' => env('MAIL_FROM_ADDRESS', 'noreply@faithconnect.com'),
+        'name' => env('MAIL_FROM_NAME', 'FaithConnect'),
     ],
 
 ];

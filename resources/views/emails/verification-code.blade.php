@@ -22,7 +22,7 @@
             overflow: hidden;
         }
         .header {
-            background: #4a6fa5;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 30px;
             text-align: center;
@@ -32,15 +32,16 @@
         }
         .verification-code {
             background: #f8f9fa;
-            border: 2px solid #4a6fa5;
+            border: 2px dashed #667eea;
             border-radius: 8px;
-            padding: 20px;
+            padding: 25px;
             text-align: center;
             margin: 30px 0;
-            font-size: 24px;
+            font-size: 36px;
             font-weight: bold;
-            letter-spacing: 3px;
-            color: #4a6fa5;
+            letter-spacing: 8px;
+            color: #667eea;
+            font-family: 'Courier New', monospace;
         }
         .footer {
             background: #f8f9fa;
@@ -48,10 +49,11 @@
             text-align: center;
             font-size: 14px;
             color: #666;
+            border-top: 1px solid #e9ecef;
         }
         .warning {
             background: #fff3cd;
-            border: 1px solid #ffeaa7;
+            border-left: 4px solid #ffc107;
             border-radius: 4px;
             padding: 15px;
             margin: 20px 0;
@@ -62,25 +64,29 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Email Verification</h1>
+            <h1>✝️ FaithConnect</h1>
+            <p>Connecting Faith Communities</p>
         </div>
         
         <div class="content">
-            <h2>Welcome!</h2>
-            <p>Thank you for registering with us. To complete your registration, please use the verification code below:</p>
+            <h2>Welcome{{ isset($name) ? ', ' . $name : '' }}! 👋</h2>
+            <p>Thank you for registering with FaithConnect. To complete your registration, please use the verification code below:</p>
             
             <div class="verification-code">
                 {{ $code }}
             </div>
             
             <div class="warning">
-                <strong>Important:</strong> This verification code will expire in 10 minutes. If you didn't request this code, please ignore this email.
+                <strong>⏱️ Important:</strong> This verification code will expire in <strong>10 minutes</strong>. If you didn't request this code, please ignore this email.
             </div>
             
             <p>If you have any questions or need assistance, please don't hesitate to contact our support team.</p>
+            
+            <p>Blessings,<br><strong>The FaithConnect Team</strong></p>
         </div>
         
         <div class="footer">
+            <p>© 2024 FaithConnect. All rights reserved.</p>
             <p>This is an automated message. Please do not reply to this email.</p>
         </div>
     </div>
