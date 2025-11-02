@@ -28,7 +28,9 @@ Route::post('/send-verification', function (Request $request) {
         
         // Send simple text email
         Mail::raw("Hi {$firstName}!\n\nYour verification code is: {$code}\n\nThis code expires in 10 minutes.\n\nThank you!", function($message) use ($email) {
-            $message->to($email)->subject('Email Verification Code - FaithConnect');
+            $message->to($email)
+                    ->subject('Email Verification Code - FaithConnect')
+                    ->from('gio646526@gmail.com', 'FaithConnect'); // Use your verified email
         });
 
         // Check if email was sent successfully
