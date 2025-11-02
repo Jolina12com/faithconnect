@@ -7,33 +7,44 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 
 Route::post('/send-verification', function (Request $request) {
+    \Log::info('Verification request started', ['email' => $request->email]);
+    
     try {
         // Validate input
+        \Log::info('Starting validation');
         $validated = $request->validate([
             'email' => 'required|email',
             'first_name' => 'required|string',
             'last_name' => 'required|string',
             'password' => 'required|string|min:12'
         ]);
+        \Log::info('Validation passed');
 
         $email = $validated['email'];
         $firstName = $validated['first_name'];
         
         // Generate code
+        \Log::info('Generating code');
         $code = str_pad(rand(100000, 999999), 6, '0', STR_PAD_LEFT);
+        \Log::info('Code generated: ' . $code);
         
         // Store in cache
+        \Log::info('Storing in cache');
         Cache::put("verification_code_{$email}", $code, 600);
         Cache::put("registration_data_{$email}", $validated, 600);
+        \Log::info('Cache stored');
         
         // Send email
+        \Log::info('Preparing email');
         $emailText = "Hi {$firstName}!\n\nYour verification code is: {$code}\n\nThis code expires in 10 minutes.\n\nThank you!";
         
+        \Log::info('Sending email via Mail::raw');
         Mail::raw($emailText, function($message) use ($email) {
             $message->to($email)
                     ->subject('Email Verification Code - FaithConnect')
                     ->from('gio646526@gmail.com', 'FaithConnect');
         });
+        \Log::info('Email sent successfully');
 
         return response()->json([
             'success' => true,
@@ -41,6 +52,7 @@ Route::post('/send-verification', function (Request $request) {
         ]);
 
     } catch (\Illuminate\Validation\ValidationException $e) {
+        \Log::error('Validation failed', ['errors' => $e->errors()]);
         return response()->json([
             'success' => false,
             'message' => 'Validation failed',
@@ -48,11 +60,16 @@ Route::post('/send-verification', function (Request $request) {
         ], 422);
         
     } catch (\Throwable $e) {
-        \Log::error('Send verification error: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine());
+        \Log::error('Send verification error', [
+            'message' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'trace' => $e->getTraceAsString()
+        ]);
         
         return response()->json([
             'success' => false,
-            'message' => 'Server error occurred'
+            'message' => 'Server error: ' . $e->getMessage()
         ], 500);
     }
 });
