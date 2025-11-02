@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Resend\Laravel\Facades\Resend;
+use Illuminate\Support\Facades\Mail;
 
 Route::post('/send-verification', function (Request $request) {
     try {
@@ -20,13 +20,12 @@ Route::post('/send-verification', function (Request $request) {
         Cache::put("verification_code_{$email}", $code, 600);
         Cache::put("registration_data_{$email}", $request->all(), 600);
         
-        // Send email via Resend
-        Resend::emails()->send([
-            'from' => 'Acme <onboarding@resend.dev>',
-            'to' => [$email],
-            'subject' => 'Email Verification Code - FaithConnect',
-            'text' => "Hi {$request->first_name}!\n\nYour verification code is: {$code}\n\nThis code expires in 10 minutes.\n\nThank you!"
-        ]);
+        // Send email via SendGrid
+        Mail::raw("Hi {$request->first_name}!\n\nYour verification code is: {$code}\n\nThis code expires in 10 minutes.\n\nThank you!", function($message) use ($email) {
+            $message->to($email)
+                    ->subject('Email Verification Code - FaithConnect')
+                    ->from('noreply@faithconnect.com', 'FaithConnect');
+        });
 
         return response()->json([
             'success' => true,
