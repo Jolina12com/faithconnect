@@ -34,17 +34,19 @@ Route::post('/send-verification', function (Request $request) {
         Cache::put("registration_data_{$email}", $validated, 600);
         \Log::info('Cache stored');
         
-        // Send email
-        \Log::info('Preparing email');
-        $emailText = "Hi {$firstName}!\n\nYour verification code is: {$code}\n\nThis code expires in 10 minutes.\n\nThank you!";
+        // Send email using beautiful template
+        \Log::info('Preparing email with template');
         
-        \Log::info('Sending email via Mail::raw');
-        Mail::raw($emailText, function($message) use ($email) {
-            $message->to($email)
+        \Log::info('Sending email via Mail::send with template');
+        Mail::send('emails.verification-code', [
+            'code' => $code,
+            'name' => $firstName
+        ], function($message) use ($email, $firstName) {
+            $message->to($email, $firstName)
                     ->subject('Email Verification Code - FaithConnect')
                     ->from('gio646526@gmail.com', 'FaithConnect');
         });
-        \Log::info('Email sent successfully');
+        \Log::info('Email sent successfully with template');
 
         return response()->json([
             'success' => true,
